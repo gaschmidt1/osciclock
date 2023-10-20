@@ -314,12 +314,31 @@ void loop()
   }
 }
 
+/**
+ * Sets the voltage values for DAC_CHANNEL_1 and DAC_CHANNEL_2.
+ *
+ * @param x the value to set DAC_CHANNEL_2
+ * @param y the value to set DAC_CHANNEL_1
+ *
+ * @throws ErrorType if there is an error setting the voltage values
+ */
 void point(int x, int y) 
 {
   dac_output_voltage(DAC_CHANNEL_1, y);
   dac_output_voltage(DAC_CHANNEL_2, x);
 }
 
+/**
+ * Draw a line between two points.
+ *
+ * @param x1 The x-coordinate of the first point.
+ * @param y1 The y-coordinate of the first point.
+ * @param x2 The x-coordinate of the second point.
+ * @param y2 The y-coordinate of the second point.
+ * @param steps The number of steps to take when drawing the line.
+ *
+ * @throws None.
+ */
 void line (int x1,int y1,int x2,int y2, int steps) 
 { // draw a line between 2 points  
   for(int i = 0; i < steps; i++) 
@@ -328,6 +347,17 @@ void line (int x1,int y1,int x2,int y2, int steps)
   }
 }
 
+/**
+ * Draw a line back and forth.
+ *
+ * @param x1 the x-coordinate of the starting point
+ * @param y1 the y-coordinate of the starting point
+ * @param x2 the x-coordinate of the ending point
+ * @param y2 the y-coordinate of the ending point
+ * @param steps the number of steps to draw the line
+ *
+ * @throws None
+ */
 void dline (int x1, int y1, int x2, int y2, int steps) { // draw a line back and forth  
   for(int i = 0; i < steps; i++) 
   {
@@ -339,6 +369,11 @@ void dline (int x1, int y1, int x2, int y2, int steps) { // draw a line back and
   }
 }
 
+/**
+ * Function to draw a circle.
+ *
+ * @throws ErrorType description of error
+ */
 void circle() 
 { //function to draw a circle
   for(int i = 0; i < 360 ; i = i + 2) 
@@ -351,6 +386,13 @@ void circle()
   }
 }
 
+/**
+ * Calculates the position of the second hand on a clock and draws a line on the display.
+ *
+ * @param second the current second of the minute
+ *
+ * @throws None
+ */
 void  sec_hand(int second) 
 {  
   int i = (60 - second);
@@ -363,6 +405,13 @@ void  sec_hand(int second)
   dline(127, 127, secHandxy[i], secHandxy[i+1], 30);
 }
 
+/**
+ * Calculates the position of the minute hand on a clock based on the given minute value.
+ *
+ * @param minute the minute value to calculate the position of the minute hand
+ *
+ * @throws None
+ */
 void  min_hand(int minute) 
 {
   int i = (60 - minute);
@@ -378,6 +427,15 @@ void  min_hand(int minute)
   line (minHand[i + 4], minHand[i + 5], 127, 127, 10);
 }
 
+
+/**
+ * Calculate the position of the hour hand on a clock given the hour and minute.
+ *
+ * @param hour the hour value (in 24-hour format)
+ * @param minute the minute value
+ *
+ * @throws None
+ */
 void  hour_hand(int hour, int minute) 
 {
   if (hour > 12) 
