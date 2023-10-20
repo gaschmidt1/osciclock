@@ -19,7 +19,8 @@ const int   daylightOffset_sec = 3600;
 struct tm ti;
 
 // sine and cosine table with 360 points
-unsigned int circlex[]={
+unsigned int circlex[] = 
+{
   255,255,255,255,255,255,254,254,
   254,253,253,253,252,252,251,251,
   250,249,249,248,247,247,246,245,
@@ -67,7 +68,8 @@ unsigned int circlex[]={
   254,254,254,255,255,255,255,255
 };
 
-unsigned int circley[]={
+unsigned int circley[] = 
+{
   128,130,132,134,136,139,141,143,
   145,147,150,152,154,156,158,160,
   163,165,167,169,171,173,175,177,
@@ -116,14 +118,16 @@ unsigned int circley[]={
 };
 
 // 5 min strokes
-unsigned int min5linesxy[]={ 
+unsigned int min5linesxy[] = 
+{ 
   243,128,227,185,185,227,128,243,
   70,227,28,185,13,128,28,70,
   70,28,128,13,185,28,227,70
 };
 
 // seconds hand r = 102 (80%) 
-unsigned int secHandxy[]={ 
+unsigned int secHandxy[] = 
+{ 
   128,230,117,229,106,227,96,225,
   86,221,77,216,68,210,59,203,
   52,196,45,187,39,179,34,169,
@@ -142,7 +146,8 @@ unsigned int secHandxy[]={
 };
 
 // minute hand r = 108 (85%) fraction =  5 angle = 12 
-unsigned int minHand[]={  
+unsigned int minHand[] = 
+{  
   128,236,123,149,132,149,
   116,235,121,148,130,149,
   105,233,119,147,128,149,
@@ -206,7 +211,8 @@ unsigned int minHand[]={
 }; 
 
 // hour hand r = 83 (65%) fraction =  5 angle = 20 
-unsigned int hourHand[]={
+unsigned int hourHand[] = 
+{
     128,211,122,143,133,143,
     119,210,120,142,132,144,
     110,209,119,142,130,144,
@@ -269,7 +275,8 @@ unsigned int hourHand[]={
     136,210,123,144,135,142
 };
 
-void setup() {  
+void setup() 
+{  
   Serial.begin(115200);
   dac_output_enable(DAC_CHANNEL_1);
   dac_output_enable(DAC_CHANNEL_2);
@@ -277,7 +284,8 @@ void setup() {
   Serial.printf("Connecting to %s ", ssid);
   WiFi.enableSTA(true);
   WiFi.begin(ssid, password);
-  while (WiFi.status() != WL_CONNECTED) {
+  while (WiFi.status() != WL_CONNECTED) 
+  {
       delay(500);
       Serial.print(".");
   }
@@ -289,76 +297,101 @@ void setup() {
   WiFi.mode(WIFI_OFF);  
 }
 
-void loop() {  
+void loop() 
+{  
   getLocalTime(&ti);  
-  for(int i=0;i<5;i++) {
+  for(int i = 0; i < 5; i++) 
+  {
     circle();    // function to make a circle
     sec_hand(ti.tm_sec);
     min_hand(ti.tm_min);
-    hour_hand(ti.tm_hour,ti.tm_min);
+    hour_hand(ti.tm_hour, ti.tm_min);
   }
   // Reset time at 4 in the morning
-  if ((ti.tm_hour == 4) and (ti.tm_min == 0) and (ti.tm_sec == 0)) {
+  if ((ti.tm_hour == 4) and (ti.tm_min == 0) and (ti.tm_sec == 0)) 
+  {
     ESP.restart();
   }
 }
 
-void point(int x,int y) {
+void point(int x, int y) 
+{
   dac_output_voltage(DAC_CHANNEL_1, y);
   dac_output_voltage(DAC_CHANNEL_2, x);
 }
 
-void line (int x1,int y1,int x2,int y2, int steps) { // draw a line between 2 points  
-  for(int i=0;i<steps;i++) {
-    point(x1+i*(x2-x1)/steps,y1+i*(y2-y1)/steps);
+void line (int x1,int y1,int x2,int y2, int steps) 
+{ // draw a line between 2 points  
+  for(int i = 0; i < steps; i++) 
+  {
+    point(x1 + i * (x2 - x1) /steps , y1 + i * (y2 - y1) / steps);
   }
 }
 
-void dline (int x1,int y1,int x2,int y2,int steps) { // draw a line back and forth  
-  for(int i=0;i<steps;i++) {
-    point(x1+i*(x2-x1)/steps,y1+i*(y2-y1)/steps);
+void dline (int x1, int y1, int x2, int y2, int steps) { // draw a line back and forth  
+  for(int i = 0; i < steps; i++) 
+  {
+    point(x1 + i * (x2 - x1) / steps, y1 + i * (y2 - y1) / steps);
   }  
-  for(int i=0;i<steps;i++) {  //draw line backwards to avoid ghosts
-    point(x2+i*(x1-x2)/steps,y2+i*(y1-y2)/steps);
+  for(int i = 0; i < steps; i++) 
+  {  //draw line backwards to avoid ghosts
+    point(x2 + i * (x1 - x2) / steps, y2 + i * (y1 - y2) / steps);
   }
 }
 
-void circle() { //function to draw a circle
-  for(int i=0;i<360;i=i+2) {
-    point(circlex[i],circley[i]);
-    if (i%30==0) {  // 5 min lines
-      dline(circlex[i],circley[i],min5linesxy[i/30*2],min5linesxy[i/30*2+1],5);
+void circle() 
+{ //function to draw a circle
+  for(int i = 0; i < 360 ; i = i + 2) 
+  {
+    point(circlex[i], circley[i]);
+    if (i % 30 == 0) 
+    {  // 5 min lines
+      dline(circlex[i], circley[i] ,min5linesxy[i / 30 * 2], min5linesxy[i / 30 * 2 + 1], 5);
     }
   }
 }
 
-void  sec_hand(int second) {  
-  int i = (60-second);
-  if (i == 60) i = 0;
-  i = i*2;
-  dline(127,127,secHandxy[i],secHandxy[i+1],30);
+void  sec_hand(int second) 
+{  
+  int i = (60 - second);
+  if (i == 60) 
+  {
+    i = 0;
+  }
+
+  i = i * 2;
+  dline(127, 127, secHandxy[i], secHandxy[i+1], 30);
 }
 
-void  min_hand(int minute) {
-  int i = (60-minute);
-  if (i == 60) i = 0;
-  i = i*6;
-  line (127,127,minHand[i+2],minHand[i+3],10);
-  line (minHand[i+2],minHand[i+3],minHand[i],minHand[i+1],40);
-  line (minHand[i],minHand[i+1],minHand[i+4],minHand[i+5],40);
-  line (minHand[i+4],minHand[i+5],127,127,10);
+void  min_hand(int minute) 
+{
+  int i = (60 - minute);
+  if (i == 60)
+  {
+     i = 0;
+  }
+
+  i = i * 6;
+  line (127, 127, minHand[i + 2], minHand[i + 3], 10);
+  line (minHand[i + 2],minHand[i + 3],minHand[i],minHand[i + 1],40);
+  line (minHand[i], minHand[i + 1], minHand[i + 4], minHand[i + 5], 40);
+  line (minHand[i + 4], minHand[i + 5], 127, 127, 10);
 }
 
-void  hour_hand(int hour, int minute) {
-  if (hour>12) hour = hour-12;    
-  int hours = (hour*5 + (minute/12));  
-  int i = (60-hours);
+void  hour_hand(int hour, int minute) 
+{
+  if (hour > 12) 
+  {
+    hour = hour-12;    
+  }
+  int hours = (hour * 5 + (minute / 12));  
+  int i = (60 - hours);
   if (i == 60) i = 0;
-  i = i*6;
-  line (127,127,hourHand[i+2],hourHand[i+3],7);
-  line (hourHand[i+2],hourHand[i+3],hourHand[i],hourHand[i+1],30);
-  line (hourHand[i],hourHand[i+1],hourHand[i+4],hourHand[i+5],30);
-  line (hourHand[i+4],hourHand[i+5],127,127,7);
+  i = i * 6;
+  line (127 ,127 ,hourHand[i + 2], hourHand[i + 3], 7);
+  line (hourHand[i + 2], hourHand[i + 3],hourHand[i], hourHand[i + 1], 30);
+  line (hourHand[i], hourHand[i + 1], hourHand[i + 4], hourHand[i + 5], 30);
+  line (hourHand[i + 4],hourHand[i + 5], 127, 127, 7);
 }
 
 
